@@ -186,18 +186,18 @@ for m = 1:size(Edges,2)
         centroid_Tnp = 1/3 * sum(p(:,Triangles(1:3,posTri(n))),2);
         deltaCentroid = norm(centroid_Tnp-centroid_Tmm);
         % not a self term
-        Rpq = sqrt(pdist2(rpm(1,:).',rqp(1,:).').^2 + pdist2(rpm(2,:).',rqp(2,:).').^2 + ...
-                pdist2(rpm(3,:).',rqp(3,:).').^2 );
+        Rpq = sqrt(pdist2(rpm(1,:).',rqm(1,:).').^2 + pdist2(rpm(2,:).',rqm(2,:).').^2 + ...
+                pdist2(rpm(3,:).',rqm(3,:).').^2 );
         if(deltaCentroid>nearDist)
 
             TmmTnp=sum(sum(((edgeLength(m).*edgeLength(n)./(4.*pi)).*...
-            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOn_Plus.'*RHOm_Minus + ...
+            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOn_Plus.'*RHOm_Minus-...
             (1i./(w0.*e0))).*(exp(-1i.*k0.*Rpq)./Rpq))));
 
         else
             % term 1
             Term1=sum(sum(((edgeLength(m).*edgeLength(n)./(4.*pi)).*...
-            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOm_Minus.'*RHOn_Plus + (1i./(w0.*e0))).*...
+            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOm_Minus.'*RHOn_Plus-(1i./(w0.*e0))).*...
             GFuncNonSingPart(Rpq,k0))));
             % term 2
             Term2=sum((edgeLength(m).*edgeLength(n)./(4.*pi.*Area(posTri(n)))).*...
@@ -205,7 +205,7 @@ for m = 1:size(Edges,2)
             dot(RHOm_Minus,NearTermInner(V1np,V2np,V3np,rpm,freeVertexPos(:,n),2,1))));
             % term 3
             Term3=sum((edgeLength(m).*edgeLength(n)./(4.*pi.*Area(posTri(n)))).*...
-            QRuleO(:,4).'.*((1i./(w0.*e0)).*NearTermInner(V1np,V2np,V3np,rpm,freeVertexPos(:,n),2,2)));
+            QRuleO(:,4).'.*((-1i./(w0.*e0)).*NearTermInner(V1np,V2np,V3np,rpm,freeVertexPos(:,n),2,2)));
             % add 
             TmmTnp=Term1+Term2+Term3; 
         end
@@ -215,65 +215,29 @@ for m = 1:size(Edges,2)
         centroid_Tnm = 1/3 * sum(p(:,Triangles(1:3,negTri(n))),2);
         deltaCentroid = norm(centroid_Tnm-centroid_Tmp);
         % not a self term
-        Rpq = sqrt(pdist2(rpp(1,:).',rqm(1,:).').^2 + pdist2(rpp(2,:).',rqm(2,:).').^2 + ...
-                pdist2(rpp(3,:).',rqm(3,:).').^2 );
+        Rpq = sqrt(pdist2(rpm(1,:).',rqm(1,:).').^2 + pdist2(rpm(2,:).',rqm(2,:).').^2 + ...
+                pdist2(rpm(3,:).',rqm(3,:).').^2 );
         if(deltaCentroid>nearDist)
 
             TmpTnm=sum(sum(((edgeLength(m).*edgeLength(n)./(4.*pi)).*...
-            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOn_Minus.'*RHOm_Plus + ...
+            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOn_Minus.'*RHOm_Plus-...
             (1i./(w0.*e0))).*(exp(-1i.*k0.*Rpq)./Rpq))));
 
         else
             % term 1
             Term1=sum(sum(((edgeLength(m).*edgeLength(n)./(4.*pi)).*...
-            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOm_Plus.'*RHOn_Minus + (1i./(w0.*e0))).*...
+            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOm_Plus.'*RHOn_Minus-(1i./(w0.*e0))).*...
             GFuncNonSingPart(Rpq,k0))));
             % term 2
             Term2=sum((edgeLength(m).*edgeLength(n)./(4.*pi.*Area(negTri(n)))).*...
             QRuleO(:,4).'.*((1i.*w0.*mu0./4).*...
-            dot(RHOm_Plus,NearTermInner(V1nm,V2nm,V3nm,rpp,freeVertexNeg(:,n),2,1))));
+            dot(RHOm_Minus,NearTermInner(V1nm,V2nm,V3nm,rpm,freeVertexNeg(:,n),2,1))));
             % term 3
             Term3=sum((edgeLength(m).*edgeLength(n)./(4.*pi.*Area(negTri(n)))).*...
-            QRuleO(:,4).'.*((1i./(w0.*e0)).*NearTermInner(V1nm,V2nm,V3nm,rpp,freeVertexNeg(:,n),2,2)));
+            QRuleO(:,4).'.*((-1i./(w0.*e0)).*NearTermInner(V1nm,V2nm,V3nm,rpm,freeVertexNeg(:,n),2,2)));
             % add 
-            TmpTnm=Term1+Term2+Term3; 
+            TmmTnm=Term1+Term2+Term3; 
         end
-
-        %% Tm+ and Tn+
-        centroid_Tmp = 1/3 * sum(p(:,Triangles(1:3,posTri(m))),2);
-        centroid_Tnp = 1/3 * sum(p(:,Triangles(1:3,posTri(n))),2);
-        deltaCentroid = norm(centroid_Tnp-centroid_Tmp);
-        % not a self term
-        Rpq = sqrt(pdist2(rpp(1,:).',rqp(1,:).').^2 + pdist2(rpp(2,:).',rqp(2,:).').^2 + ...
-                pdist2(rpp(3,:).',rqp(3,:).').^2 );
-        if(deltaCentroid>nearDist)
-
-            TmpTnp=sum(sum(((edgeLength(m).*edgeLength(n)./(4.*pi)).*...
-            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOn_Plus.'*RHOm_Plus-...
-            (1i./(w0.*e0))).*(exp(-1i.*k0.*Rpq)./Rpq))));
-
-        else
-            % term 1
-            Term1=sum(sum(((edgeLength(m).*edgeLength(n)./(4.*pi)).*...
-            (QRuleO(:,4)*QRuleS(:,4).').*((1i.*w0.*mu0./4).*RHOm_Plus.'*RHOn_Plus-(1i./(w0.*e0))).*...
-            GFuncNonSingPart(Rpq,k0))));
-            % term 2
-            Term2=sum((edgeLength(m).*edgeLength(n)./(4.*pi.*Area(posTri(n)))).*...
-            QRuleO(:,4).'.*((1i.*w0.*mu0./4).*...
-            dot(RHOm_Plus,NearTermInner(V1np,V2np,V3np,rpp,freeVertexPos(:,n),2,1))));
-            % term 3
-            Term3=sum((edgeLength(m).*edgeLength(n)./(4.*pi.*Area(posTri(n)))).*...
-            QRuleO(:,4).'.*((-1i./(w0.*e0)).*NearTermInner(V1np,V2np,V3np,rpp,freeVertexPos(:,n),2,2)));
-            % add 
-            TmpTnp=Term1+Term2+Term3; 
-        end
-
-
-        %% ZMN
-        Zmn(m,n) = TmmTnm + TmmTnp + TmpTnp + TmpTnm;
-
-
-
     end
         
 end
