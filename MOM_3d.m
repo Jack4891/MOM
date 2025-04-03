@@ -10,14 +10,14 @@ mu0 = 4*pi*1e-7;
 e0 = 8.854e-12;
 
 k0 = w0 * sqrt(mu0*e0);
-L = 3 * Lambda;
-W = 3 * Lambda;
+L = Lambda;
+W = Lambda;
 % L = 2;
 % W = 3;
 
 
 %% generate the mesh
-n = 15; % number of elements along the x axis
+n = 10; % number of elements along the x axis
 x = linspace(-L/2,L/2,n);
 y = linspace(-W/2,W/2,n);
 
@@ -280,11 +280,11 @@ for m = 1:size(Edges,2)
 
 
     %% generation of Vm
-    IncTheta=45*pi/180;
-    IncPhi=45*pi/180;
+    IncTheta=90*pi/180;
+    IncPhi=0*pi/180;
     IncK=[sin(IncTheta)*cos(IncPhi) sin(IncTheta)*sin(IncPhi) ... 
     cos(IncTheta)]; 
-    IncPol=[0;1;0];
+    IncPol=[1;0;0];
     E0i=1; 
     Einc=@(x,y,z)E0i.*IncPol.*exp(-1i.*dot(k0.*IncK,[x,y,z]));
 
@@ -305,10 +305,10 @@ for k = 1:numTriangles
     for m = 1:edgesTotal
         IE = I(m) * edgeLength(m);
         if(posTri(m) == k)
-            J = J + IE * RHO_Saved_Plus(:,m) / (2*Area(posTri(m)));
+            J = J + IE * RHO_Saved_Plus(:,m)' / (2*Area(posTri(m)));
         end
         if(negTri(m) == k)
-            J = J + IE * RHO_Saved_Minus(:,m) / (2*Area(posTri(m)));
+            J = J + IE * RHO_Saved_Minus(:,m)' / (2*Area(posTri(m)));
         end
         Jx = J(1);
         Jy = J(2);
@@ -330,7 +330,7 @@ for m=1:numTriangles
 end
 Cam=repmat(CurrentNorm1,3,1);
 Cph=repmat(Jy./max(normalCurrent),3,1);
-
+figure
 h = fill3(Xp,Yp,Zp,Cam);
 colormap jet;
 axis('equal')
